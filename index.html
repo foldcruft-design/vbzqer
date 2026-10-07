@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Cube</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+
+  <div class="sky" aria-hidden="true">
+    <i class="aurora a1"></i>
+    <i class="aurora a2"></i>
+    <i class="aurora a3"></i>
+    <canvas id="dust"></canvas>
+    <i class="vignette"></i>
+  </div>
+
+  <main class="scene" id="scene">
+    <div class="float" id="float">
+      <div class="cube" id="cube">
+        <div class="core"></div>
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+    </div>
+    <div class="shadow" id="shadow"></div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
