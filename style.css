@@ -1,0 +1,180 @@
+:root {
+  --s: min(44vmin, 230px);          /* размер куба */
+  --h: calc(var(--s) / 2);
+  --bg: #060913;
+  --ice: #6fc8ff;
+  --violet: #9b8cff;
+  --rose: #ff8fd0;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+* { box-sizing: border-box; margin: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  font-family: -apple-system, "SF Pro Display", "Segoe UI", Roboto, system-ui, sans-serif;
+}
+
+/* ================= ФОН ================= */
+.sky { position: fixed; inset: 0; overflow: hidden; }
+
+.aurora {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  will-change: transform;
+}
+.a1 {
+  width: 80vmax; height: 80vmax; left: -35vmax; top: -40vmax;
+  background: radial-gradient(circle, rgba(111,200,255,.75), transparent 62%);
+  animation: drift1 24s ease-in-out infinite alternate;
+}
+.a2 {
+  width: 75vmax; height: 75vmax; right: -38vmax; bottom: -38vmax;
+  background: radial-gradient(circle, rgba(155,140,255,.7), transparent 62%);
+  animation: drift2 28s ease-in-out infinite alternate;
+}
+.a3 {
+  width: 50vmax; height: 50vmax; left: 25%; top: 35%;
+  background: radial-gradient(circle, rgba(255,143,208,.35), transparent 62%);
+  animation: drift3 32s ease-in-out infinite alternate;
+}
+@keyframes drift1 { to { transform: translate(22vmax, 16vmax) scale(1.18) rotate(20deg); } }
+@keyframes drift2 { to { transform: translate(-20vmax, -14vmax) scale(1.12) rotate(-18deg); } }
+@keyframes drift3 { to { transform: translate(-18vmax, -20vmax) scale(1.35); } }
+
+#dust { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(3,5,12,.75) 100%);
+}
+
+/* ================= СЦЕНА ================= */
+.scene {
+  position: relative;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  perspective: 1100px;
+  cursor: grab;
+  animation: appear 1.4s var(--ease) both;
+}
+.scene.drag { cursor: grabbing; }
+
+@keyframes appear {
+  from { opacity: 0; transform: scale(.7); filter: blur(14px); }
+}
+
+.float {
+  transform-style: preserve-3d;
+  animation: bob 6s ease-in-out infinite;
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(-10px); }
+  50%      { transform: translateY(14px); }
+}
+
+/* ================= КУБ ================= */
+.cube {
+  position: relative;
+  width: var(--s);
+  height: var(--s);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--s) * .09);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.30) 0%, rgba(255,255,255,.06) 38%, rgba(255,255,255,.02) 62%, rgba(255,255,255,.18) 100%),
+    linear-gradient(200deg, rgba(111,200,255,.16), rgba(155,140,255,.14));
+  border: 1.5px solid rgba(255,255,255,.42);
+  -webkit-backdrop-filter: blur(6px) saturate(160%);
+  backdrop-filter: blur(6px) saturate(160%);
+  box-shadow:
+    inset 0 0 calc(var(--s) * .16) rgba(255,255,255,.22),
+    inset 0 0 2px rgba(255,255,255,.7);
+  backface-visibility: visible;
+  overflow: hidden;
+}
+
+/* бегущий блик по каждой грани */
+.face::after {
+  content: "";
+  position: absolute;
+  top: -20%; bottom: -20%;
+  width: 38%;
+  left: -60%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.45), transparent);
+  transform: skewX(-20deg);
+  animation: glint 7s ease-in-out infinite;
+}
+.front::after  { animation-delay: 0s; }
+.right::after  { animation-delay: 1.2s; }
+.back::after   { animation-delay: 2.4s; }
+.left::after   { animation-delay: 3.6s; }
+.top::after    { animation-delay: 4.8s; }
+.bottom::after { animation-delay: 6s; }
+@keyframes glint {
+  0%, 62% { left: -60%; opacity: 0; }
+  70%     { opacity: 1; }
+  100%    { left: 140%; opacity: 0; }
+}
+
+.front  { transform: translateZ(var(--h)); }
+.back   { transform: rotateY(180deg) translateZ(var(--h)); }
+.right  { transform: rotateY(90deg)  translateZ(var(--h)); }
+.left   { transform: rotateY(-90deg) translateZ(var(--h)); }
+.top    { transform: rotateX(90deg)  translateZ(var(--h)); }
+.bottom { transform: rotateX(-90deg) translateZ(var(--h)); }
+
+/* ядро внутри куба */
+.core {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: calc(var(--s) * .34);
+  height: calc(var(--s) * .34);
+  margin: calc(var(--s) * -.17) 0 0 calc(var(--s) * -.17);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, var(--ice) 35%, var(--violet) 70%, transparent 100%);
+  box-shadow:
+    0 0 calc(var(--s) * .25) rgba(111,200,255,.9),
+    0 0 calc(var(--s) * .6)  rgba(155,140,255,.55);
+  transform: translateZ(0);
+  animation: beat 3.4s ease-in-out infinite;
+}
+@keyframes beat {
+  0%, 100% { transform: scale(.85); filter: hue-rotate(0deg); opacity: .85; }
+  50%      { transform: scale(1.15); filter: hue-rotate(40deg); opacity: 1; }
+}
+
+/* ================= ТЕНЬ ================= */
+.shadow {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + var(--s) * .95);
+  width: calc(var(--s) * 1.1);
+  height: calc(var(--s) * .18);
+  margin-left: calc(var(--s) * -.55);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(111,200,255,.45), transparent 70%);
+  filter: blur(10px);
+  animation: shadow 6s ease-in-out infinite;
+}
+@keyframes shadow {
+  0%, 100% { transform: scale(1.08); opacity: .9; }
+  50%      { transform: scale(.82); opacity: .5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora, .float, .face::after, .core, .shadow { animation: none !important; }
+}
